@@ -95,5 +95,11 @@ setequal(1:5, 1:6)
 setequal(1:5, 5:1)
 setequal(tab1, tab2)
 
-
+# setdiff
+df1 <- data.frame(x = c("a","b"), y = c("a","a"))
+df2 <- data.frame(x = c("a","a"), y = c("a","b"))
+df1
+df2
+setdiff(df1, df2)
+setdiff(df2, df1)
 
