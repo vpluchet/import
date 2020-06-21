@@ -113,3 +113,82 @@ tmp2
 tmp3 <- tmp2 %>% spread(key = column_name, value = value)
 tmp3
 
+# Simplest case where column names are character data
+head(relig_income)
+tidy <- relig_income %>%
+  pivot_longer(-religion, names_to = "income", values_to = "count")
+head(tidy)
+
+# Slightly more complex case where columns have common prefix,
+# and missings are structural so should be dropped.
+head(billboard)
+tidy <- billboard %>%
+  pivot_longer(
+    cols = starts_with("wk"),
+    names_to = "week",
+    names_prefix = "wk",
+    values_to = "rank",
+    values_drop_na = TRUE
+  )
+head(tidy)
+
+# Multiple variables stored in column names
+head(who)
+tidy <- who %>% pivot_longer(
+  cols = new_sp_m014:newrel_f65,
+  names_to = c("diagnosis", "gender", "age"),
+  names_pattern = "new_?(.*)_(.)(.*)",
+  values_to = "count"
+)
+head(tidy)
+
+# Multiple observations per row
+head(anscombe)
+tidy <- anscombe %>%
+  pivot_longer(everything(),
+               names_to = c(".value", "set"),
+               names_pattern = "(.)(.)"
+  )
+head(tidy)
+
+# Example with pivot_wider
+head(fish_encounters)
+tidy <- fish_encounters %>%
+  pivot_wider(names_from = station, values_from = seen)
+head(tidy)
+# Fill in missing values
+fish_encounters %>%
+  pivot_wider(names_from = station, values_from = seen, values_fill = 0)
+
+# Generate column names from multiple variables
+us_rent_income
+us_rent_income %>%
+  pivot_wider(names_from = variable, values_from = c(estimate, moe))
+
+# When there are multiple `names_from` or `values_from`, you can use
+# use `names_sep` or `names_glue` to control the output variable names
+us_rent_income %>%
+  pivot_wider(
+    names_from = variable,
+    names_sep = ".",
+    values_from = c(estimate, moe)
+  )
+us_rent_income %>%
+  pivot_wider(
+    names_from = variable,
+    names_glue = "{variable}_{.value}",
+    values_from = c(estimate, moe)
+  )
+
+# Can perform aggregation with values_fn
+warpbreaks <- as_tibble(warpbreaks[c("wool", "tension", "breaks")])
+warpbreaks
+warpbreaks %>%
+  pivot_wider(
+    names_from = wool,
+    values_from = breaks,
+    values_fn = mean
+  )
+
+
+
