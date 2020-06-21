@@ -27,6 +27,8 @@ top_salary %>% arrange(desc(salary))
 
 # Awards players
 head(AwardsPlayers)
+awards_y2016 <- AwardsPlayers %>% filter(yearID == 2016)
 
-
+length(intersect(awards_y2016$playerID, top_names$playerID))
+length(setdiff(awards_y2016$playerID, top_names$playerID))
 
