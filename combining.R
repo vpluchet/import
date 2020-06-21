@@ -48,10 +48,10 @@ anti_join(tab1, tab2)
 # Binding
 bind_cols(a = 1:3, b = 4:6)
 
+# Binding columns
 tab <- left_join(murders, results_us_election_2016, by = "state")
 head(tab)
 str(tab)
-
 
 tab1 <- tab[, 1:3]
 head(tab1)
@@ -60,9 +60,40 @@ tab3 <- tab[, 7:9]
 new_tab <- bind_cols(tab1, tab2, tab3)
 head(new_tab)
 
+# Binding rows
 tab1 <- tab[1:2,]
 tab1
 tab2 <- tab[3:4,]
 tab2
 bind_rows(tab1, tab2)
+
+# intersect vectors or data frames
+intersect(1:10, 6:15)
+intersect(c("a","b","c"), c("b","c","d"))
+tab1 <- tab[1:5,] #first 5 rows of tab
+tab2 <- tab[3:7,] #rows 3 to 7 of tab
+head(tab1)
+head(tab2)
+intersect(tab1, tab2) #rows 3,4,5 of tab
+
+# perform a union of vectors or data frames
+union(1:10, 6:15)
+union(c("a","b","c"), c("b","c","d"))
+tab1 <- tab[1:5,]  #first 5 rows of tab
+tab2 <- tab[3:7,] #rows 3 to 7 of tab
+union(tab1, tab2) #rows 1 to 7 of tab
+
+# set difference of vectors or data frames
+setdiff(1:10, 6:15)
+setdiff(6:15, 1:10)
+tab1 <- tab[1:5,]
+tab2 <- tab[3:7,]
+setdiff(tab1, tab2)
+
+# setequal determines whether sets have the same elements, regardless of order
+setequal(1:5, 1:6)
+setequal(1:5, 5:1)
+setequal(tab1, tab2)
+
+
 
