@@ -59,3 +59,13 @@ exc <- read_excel(exc_name, "Sheet1")
 # Data import assessment
 url <- "http://mlr.cs.umass.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data"
 dat5 <- read_csv(url, col_names = FALSE)
+
+# Sales
+sales <- read_csv("sales.csv")
+str(sales)
+sales
+sales %>% mutate_at(2:3, parse_number)
+# sales %>% mutate_at(2:3, as.numeric) will not work
+# sales %>% mutate_all(parse_number) will not work because will apply to first col too
+sales %>% mutate_at(2:3, funs(str_replace_all(., c("\\$|,"), ""))) %>% 
+  mutate_at(2:3, as.numeric)
