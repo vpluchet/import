@@ -1,5 +1,6 @@
 # import a webpage into R
 library(rvest)
+library(tidyverse)
 url <- "https://en.wikipedia.org/wiki/Murder_in_the_United_States_by_state"
 h <- read_html(url)
 class(h)
