@@ -262,6 +262,115 @@ tab
 # separate fails because it leaves in extra characters, but extract keeps only the digits because of regex groups
 tab %>% separate(x, c("feet","inches"), sep = "'", fill = "right")
 tab %>% extract(x, c("feet", "inches"), regex = "(\\d)'(\\d{1,2})")
-    
 
+# read raw murders data line by line
+filename <- system.file("extdata/murders.csv", package = "dslabs")
+lines <- readLines(filename)
+lines %>% head()
+str(lines)
+
+# split at commas with str_split function, remove row of column names
+x <- str_split(lines, ",") 
+x %>% head()
+str(x)
+col_names <- x[[1]]
+x <- x[-1]
+
+# extract first element of each list entry
+library(purrr)
+map(x, function(y) y[1]) %>% head()
+map(x, 1) %>% head()
+
+# extract columns 1-5 as characters, then convert to proper format - NOTE: DIFFERENT FROM VIDEO
+dat <- data.frame(parse_guess(map_chr(x, 1)),
+                  parse_guess(map_chr(x, 2)),
+                  parse_guess(map_chr(x, 3)),
+                  parse_guess(map_chr(x, 4)),
+                  parse_guess(map_chr(x, 5))) %>%
+  setNames(col_names)
+
+dat %>% head
+
+# more efficient code for the same thing
+dat <- x %>%
+  transpose() %>%
+  map( ~ parse_guess(unlist(.))) %>%
+  setNames(col_names) %>% 
+  as.data.frame()
+
+head(dat)
+
+# the simplify argument makes str_split return a matrix instead of a list
+x <- str_split(lines, ",", simplify = TRUE) 
+col_names <- x[1,]
+x <- x[-1,]
+x %>% as_data_frame() %>%
+  setNames(col_names) %>%
+  mutate_all(parse_guess)
+
+# life expectancy time series for Caribbean countries
+library(dslabs)
+data("gapminder")
+gapminder %>% 
+  filter(region=="Caribbean") %>%
+  ggplot(aes(year, life_expectancy, color = country)) +
+  geom_line()
+
+# display long country names
+gapminder %>% 
+  filter(region=="Caribbean") %>%
+  filter(str_length(country) >= 12) %>%
+  distinct(country) 
+
+# recode long country names and remake plot
+gapminder %>% filter(region=="Caribbean") %>%
+  mutate(country = recode(country, 
+                          'Antigua and Barbuda'="Barbuda",
+                          'Dominican Republic' = "DR",
+                          'St. Vincent and the Grenadines' = "St. Vincent",
+                          'Trinidad and Tobago' = "Trinidad")) %>%
+  ggplot(aes(year, life_expectancy, color = country)) +
+  geom_line()
+
+# Assessment 1
+s <- c("5'10", "6'1\"", "5'8inches", "5'7.5")
+tab <- data.frame(x = s)
+tab
+tab %>% mutate(y = str_replace(x, '"|inches', ""))
+pat <- "(\\d)'(\\d{1,2})(\\.\\d+)?"
+extract(data = tab, col = x, into = c("feet", "inches", "decimal"), 
+        regex = pat)
+
+# Assessment 2
+schedule <- data.frame(day = c("Monday", "Tuesday"), staff = c("Mandy, Chris and Laura", 
+                                                           "Steve, Ruth and Frank"))
+schedule
+# str_split(schedule$staff, ",|and")
+str_split(schedule$staff, ", | and ")
+str_split(schedule$staff, ",\\s|\\sand\\s")
+# str_split(schedule$staff, "\\s?(,|and)\\s?")
+
+#Assessment 3
+tidy <- schedule %>% 
+  mutate(staff = str_split(staff, ", | and ")) %>% 
+  unnest(cols = c(staff))
+tidy
+
+# Assessment 4
+# display long country names
+gapminder %>% 
+  filter(region=="Middle Africa") %>%
+  filter(str_length(country) >= 12) %>%
+  distinct(country) 
+
+# create new column with short country name
+dat <- gapminder %>% filter(region == "Middle Africa") %>% 
+  mutate(country_short = recode(country, 
+                                "Central African Republic" = "CAR", 
+                                "Congo, Dem. Rep." = "DRC",
+                                "Equatorial Guinea" = "Eq. Guinea"))
+
+dat %>% ggplot(aes(year, life_expectancy, color = country_short)) +
+                 geom_line()
+  
 
